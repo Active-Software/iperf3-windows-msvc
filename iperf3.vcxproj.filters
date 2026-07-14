@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{0C5D1A5B-9022-4F26-9E64-23C61423615B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{C59EF73D-C614-4B24-8D47-A8D6BE8B0C81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows Compat">
+      <UniqueIdentifier>{12A77D73-D407-418C-9F73-4B4AD73BB0B7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\cjson.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\dscp.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\iperf_api.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\iperf_auth.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\iperf_client_api.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\iperf_error.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\iperf_locale.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\iperf_pthread.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\iperf_server_api.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\iperf_tcp.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\iperf_time.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\iperf_udp.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\iperf_util.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\main.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\net.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\tcp_info.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\timer.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="src\units.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="windows\compat\src\getopt_long.c"><Filter>Windows Compat</Filter></ClCompile>
+    <ClCompile Include="windows\compat\src\win32_compat.c"><Filter>Windows Compat</Filter></ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\*.h"><Filter>Header Files</Filter></ClInclude>
+    <ClInclude Include="windows\compat\include\*.h"><Filter>Windows Compat</Filter></ClInclude>
+    <ClInclude Include="windows\compat\include\arpa\*.h"><Filter>Windows Compat</Filter></ClInclude>
+    <ClInclude Include="windows\compat\include\net\*.h"><Filter>Windows Compat</Filter></ClInclude>
+    <ClInclude Include="windows\compat\include\netinet\*.h"><Filter>Windows Compat</Filter></ClInclude>
+    <ClInclude Include="windows\compat\include\sys\*.h"><Filter>Windows Compat</Filter></ClInclude>
+  </ItemGroup>
+</Project>
