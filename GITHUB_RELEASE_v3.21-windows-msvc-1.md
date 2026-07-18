@@ -32,7 +32,8 @@ Each zip contains:
 
 - SCTP is not enabled.
 - OpenSSL authentication support is not enabled.
-- The Unix daemon option `-D` is not supported on native Windows.
+- The Unix daemon option `-D` / `--daemon` is not supported on native Windows.
+  Use the Windows service mode from build 2 and later for a persistent iperf3 server.
 
 ## Quick test
 
