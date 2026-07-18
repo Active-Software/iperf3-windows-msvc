@@ -42,8 +42,19 @@ small MSVC shims for POSIX APIs used by iperf3, including sockets-style
 `read/write/close`, pthread-like wrappers, timing, temporary buffers, and random
 bytes via `BCryptGenRandom`.
 
-SCTP and OpenSSL authentication are not enabled in this project. The `-D`
-daemon option is not supported on native Windows.
+SCTP, OpenSSL authentication, Linux FQ socket pacing, and sendfile zero-copy are
+not enabled in this project. Native Windows builds add:
+
+```powershell
+.\iperf3.exe --service-install
+.\iperf3.exe --service-start
+.\iperf3.exe --service-stop
+.\iperf3.exe --service-remove
+```
+
+The service commands require an elevated terminal. The service runs `iperf3 -s`
+and writes its log to `%ProgramData%\iperf3\iperf3-service.log`. If the server
+process exits unexpectedly, the service keeps running and starts it again.
 
 ## Release package contents
 
@@ -56,3 +67,12 @@ README_RELEASE.txt
 ```
 
 Publish both `x64` and `ARM64` zip files, plus `SHA256SUMS.txt`.
+
+## Portable packages
+
+```powershell
+.\packaging\make-release.ps1
+```
+
+The script builds `Release|x64` and `Release|ARM64`, then creates the zip files
+and `SHA256SUMS.txt` under `dist\`.

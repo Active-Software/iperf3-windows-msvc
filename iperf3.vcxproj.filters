@@ -32,6 +32,7 @@
     <ClCompile Include="src\units.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="windows\compat\src\getopt_long.c"><Filter>Windows Compat</Filter></ClCompile>
     <ClCompile Include="windows\compat\src\win32_compat.c"><Filter>Windows Compat</Filter></ClCompile>
+    <ClCompile Include="windows\compat\src\win32_service.c"><Filter>Windows Compat</Filter></ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\*.h"><Filter>Header Files</Filter></ClInclude>

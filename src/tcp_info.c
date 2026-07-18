@@ -65,6 +65,8 @@ has_tcpinfo(void)
     return 1;
 #elif (defined(__APPLE__) && defined(__MACH__)) && defined(TCP_CONNECTION_INFO)
     return 1;
+#elif defined(_WIN32) && defined(SIO_TCP_INFO) && defined(TCP_INFO_v0)
+    return 1;
 #else
     return 0;
 #endif
@@ -88,6 +90,8 @@ has_tcpinfo_retransmits(void)
     return 1;
 #elif (defined(__APPLE__) && defined(__MACH__))  && defined(TCP_CONNECTION_INFO)
     return 1;
+#elif defined(_WIN32) && defined(SIO_TCP_INFO) && defined(TCP_INFO_v0)
+    return 0;
 #else
     return 0;
 #endif
@@ -124,6 +128,22 @@ save_tcpinfo(struct iperf_stream *sp, struct iperf_interval_results *irp)
 	       irp->tcpConnInfo.tcpi_srtt);
     }
 
+#elif defined(_WIN32) && defined(SIO_TCP_INFO) && defined(TCP_INFO_v0)
+    DWORD bytes_returned = 0;
+
+    memset(&irp->winTcpInfo, 0, sizeof(irp->winTcpInfo));
+    if (WSAIoctl(sp->socket, SIO_TCP_INFO,
+                 NULL, 0,
+                 &irp->winTcpInfo, sizeof(irp->winTcpInfo),
+                 &bytes_returned, NULL, NULL) == SOCKET_ERROR) {
+        iperf_err(sp->test, "SIO_TCP_INFO - %s", strerror(errno));
+    }
+
+    if (sp->test->debug) {
+        printf("windows tcp info cwnd %lu snd_mss %lu rtt %lu\n",
+               irp->winTcpInfo.Cwnd, irp->winTcpInfo.Mss,
+               irp->winTcpInfo.RttUs);
+    }
 #endif
 }
 
@@ -139,6 +159,8 @@ get_total_retransmits(struct iperf_interval_results *irp)
     return irp->tcpInfo.tcpi_snd_rexmitpack;
 #elif (defined(__APPLE__) && defined(__MACH__)) && defined(TCP_CONNECTION_INFO)
     return irp->tcpConnInfo.tcpi_txretransmitpackets;
+#elif defined(_WIN32) && defined(SIO_TCP_INFO) && defined(TCP_INFO_v0)
+    return -1;
 #else
     return -1;
 #endif
@@ -161,6 +183,8 @@ get_snd_cwnd(struct iperf_interval_results *irp)
     return irp->tcpInfo.tcpi_snd_cwnd;
 #elif (defined(__APPLE__) && defined(__MACH__)) && defined(TCP_CONNECTION_INFO)
     return irp->tcpConnInfo.tcpi_snd_cwnd;
+#elif defined(_WIN32) && defined(SIO_TCP_INFO) && defined(TCP_INFO_v0)
+    return irp->winTcpInfo.Cwnd;
 #else
     return -1;
 #endif
@@ -185,6 +209,8 @@ get_snd_wnd(struct iperf_interval_results *irp)
     return irp->tcpInfo.tcpi_snd_wnd;
 #elif (defined(__APPLE__) && defined(__MACH__))  && defined(TCP_CONNECTION_INFO)
     return irp->tcpConnInfo.tcpi_snd_wnd;
+#elif defined(_WIN32) && defined(SIO_TCP_INFO) && defined(TCP_INFO_v0)
+    return irp->winTcpInfo.SndWnd;
 #else
     return -1;
 #endif
@@ -208,6 +234,8 @@ get_rtt(struct iperf_interval_results *irp)
     // macOS's tcp_connection_info explicitly separates the smoothed average (tcpi_srtt) 
     // from the most recently measured RTT (tcpi_rttcur).
     return irp->tcpConnInfo.tcpi_srtt;
+#elif defined(_WIN32) && defined(SIO_TCP_INFO) && defined(TCP_INFO_v0)
+    return irp->winTcpInfo.RttUs;
 #else
     return -1;
 #endif
@@ -264,4 +292,3 @@ get_reorder(struct iperf_interval_results *irp)
     return -1;
 #endif
 }
-

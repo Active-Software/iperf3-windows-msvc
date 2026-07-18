@@ -113,6 +113,8 @@ struct iperf_interval_results
     struct tcp_info tcpInfo; /* getsockopt(TCP_INFO) for Linux, {Free,Net,Open}BSD */
 #elif (defined(__APPLE__) && defined(__MACH__))  && defined(TCP_CONNECTION_INFO)
     struct tcp_connection_info tcpConnInfo;
+#elif defined(_WIN32) && defined(SIO_TCP_INFO) && defined(TCP_INFO_v0)
+    TCP_INFO_v0 winTcpInfo;
 #else
     /* Just placeholders, never accessed. */
     char *tcpInfo;

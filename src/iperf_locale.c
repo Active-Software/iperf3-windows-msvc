@@ -142,7 +142,14 @@ const char usage_longstr[] = "Usage: iperf3 [-s|-c host] [options]\n"
                            "  -h, --help                show this message and quit\n"
                            "Server specific:\n"
                            "  -s, --server              run in server mode\n"
+#ifndef _WIN32
                            "  -D, --daemon              run the server as a daemon\n"
+#else
+                           "  --service-install         install an iperf3 Windows service\n"
+                           "  --service-start           start the iperf3 Windows service\n"
+                           "  --service-stop            stop the iperf3 Windows service\n"
+                           "  --service-remove          remove the iperf3 Windows service\n"
+#endif
                            "  -1, --one-off             handle one client connection then exit\n"
 			   "  --server-bitrate-limit #[KMG][/#]   server's total bit rate limit (default 0 = no limit)\n"
 			   "                            (optional slash and number of secs interval for averaging\n"
@@ -210,7 +217,9 @@ const char usage_longstr[] = "Usage: iperf3 [-s|-c host] [options]\n"
 #if defined(HAVE_FLOWLABEL)
                            "  -L, --flowlabel N         set the IPv6 flow label (only supported on Linux)\n"
 #endif /* HAVE_FLOWLABEL */
+#if defined(HAVE_SENDFILE)
                            "  -Z, --zerocopy            use a 'zero copy' method of sending data\n"
+#endif
 #if defined(HAVE_MSG_TRUNC)
                            "  --skip-rx-copy            ignore received messages using MSG_TRUNC option\n"
 #endif /* HAVE_MSG_TRUNC */

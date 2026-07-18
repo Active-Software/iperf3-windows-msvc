@@ -87,7 +87,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>Ws2_32.lib;Iphlpapi.lib;Bcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;Iphlpapi.lib;Bcrypt.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -133,6 +133,7 @@
     <ClCompile Include="src\units.c" />
     <ClCompile Include="windows\compat\src\getopt_long.c" />
     <ClCompile Include="windows\compat\src\win32_compat.c" />
+    <ClCompile Include="windows\compat\src\win32_service.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\*.h" />

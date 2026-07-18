@@ -1106,7 +1106,9 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
         {"port", required_argument, NULL, 'p'},
         {"format", required_argument, NULL, 'f'},
         {"interval", required_argument, NULL, 'i'},
+#ifndef _WIN32
         {"daemon", no_argument, NULL, 'D'},
+#endif
         {"one-off", no_argument, NULL, '1'},
         {"verbose", no_argument, NULL, 'V'},
         {"json", no_argument, NULL, 'J'},
@@ -1143,7 +1145,9 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
 #if defined(HAVE_FLOWLABEL)
         {"flowlabel", required_argument, NULL, 'L'},
 #endif /* HAVE_FLOWLABEL */
+#if defined(HAVE_SENDFILE)
         {"zerocopy", no_argument, NULL, 'Z'},
+#endif
         {"omit", required_argument, NULL, 'O'},
         {"file", required_argument, NULL, 'F'},
         {"repeating-payload", no_argument, NULL, OPT_REPEATING_PAYLOAD},
@@ -1264,9 +1268,14 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
                 }
                 break;
             case 'D':
+#ifdef _WIN32
+                i_errno = IEUNIMP;
+                return -1;
+#else
 		test->daemon = 1;
 		server_flag = 1;
 	        break;
+#endif
             case '1':
 		test->one_off = 1;
 		server_flag = 1;
@@ -1552,6 +1561,7 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
 		TAILQ_INSERT_TAIL(&test->xbind_addrs, xbe, link);
                 break;
             case 'Z':
+#if defined(HAVE_SENDFILE)
                 if (!has_sendfile()) {
                     i_errno = IENOSENDFILE;
                     return -1;
@@ -1559,6 +1569,10 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
                 test->zerocopy = 1;
 		client_flag = 1;
                 break;
+#else
+                i_errno = IEUNIMP;
+                return -1;
+#endif
             case OPT_REPEATING_PAYLOAD:
                 test->repeating_payload = 1;
                 client_flag = 1;
@@ -5402,7 +5416,13 @@ iperf_setaffinity(struct iperf_test *test, int affinity)
     return 0;
 #elif defined(HAVE_SETPROCESSAFFINITYMASK)
 	HANDLE process = GetCurrentProcess();
-	DWORD_PTR processAffinityMask = 1 << affinity;
+	DWORD_PTR processAffinityMask;
+
+	if (affinity < 0 || affinity >= (int)(sizeof(DWORD_PTR) * 8)) {
+		i_errno = IEAFFINITY;
+		return -1;
+	}
+	processAffinityMask = ((DWORD_PTR)1) << affinity;
 
 	if (SetProcessAffinityMask(process, processAffinityMask) == 0) {
 		i_errno = IEAFFINITY;
@@ -5582,7 +5602,9 @@ int
 iperf_set_control_keepalive(struct iperf_test *test)
 {
     int opt, kaidle, kainterval, kacount;
+#ifndef _WIN32
     socklen_t len;
+#endif
 
     if (test->settings->cntl_ka) {
         // Set keepalive using system defaults
@@ -5592,6 +5614,39 @@ iperf_set_control_keepalive(struct iperf_test *test)
             return -1;
         }
 
+#ifdef _WIN32
+        kaidle = test->settings->cntl_ka_keepidle ? test->settings->cntl_ka_keepidle : 7200;
+        kainterval = test->settings->cntl_ka_interval ? test->settings->cntl_ka_interval : 1;
+        kacount = test->settings->cntl_ka_count ? test->settings->cntl_ka_count : 0;
+
+        if (test->settings->cntl_ka_keepidle || test->settings->cntl_ka_interval) {
+            DWORD bytes_returned = 0;
+            struct tcp_keepalive keepalive;
+
+            memset(&keepalive, 0, sizeof(keepalive));
+            keepalive.onoff = 1;
+            keepalive.keepalivetime = (ULONG)kaidle * 1000UL;
+            keepalive.keepaliveinterval = (ULONG)kainterval * 1000UL;
+
+            if (WSAIoctl(test->ctrl_sck, SIO_KEEPALIVE_VALS,
+                         &keepalive, sizeof(keepalive),
+                         NULL, 0, &bytes_returned, NULL, NULL) == SOCKET_ERROR) {
+                i_errno = IESETCNTLKA;
+                return -1;
+            }
+        }
+
+        if (test->verbose) {
+            printf("Control connection TCP keepalive is enabled");
+            if (test->settings->cntl_ka_keepidle || test->settings->cntl_ka_interval) {
+                printf(" with idle/interval %d/%d seconds", kaidle, kainterval);
+            }
+            if (kacount) {
+                printf(" (retry count uses Windows defaults)");
+            }
+            printf("\n");
+        }
+#else
         // Get default values when not specified
         if ((kaidle = test->settings->cntl_ka_keepidle) == 0) {
             len = sizeof(kaidle);
@@ -5649,6 +5704,7 @@ iperf_set_control_keepalive(struct iperf_test *test)
             printf("Control connection TCP Keepalive TCP_KEEPIDLE/TCP_KEEPINTVL/TCP_KEEPCNT are set to %d/%d/%d\n",
                    kaidle, kainterval, kacount);
         }
+#endif
     }
 
     return 0;

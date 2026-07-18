@@ -17,6 +17,8 @@
 
 #define HAVE_CLOCK_GETTIME 1
 #define HAVE_DAEMON 1
+#define HAVE_CPU_AFFINITY 1
+#define HAVE_DONT_FRAGMENT 1
 #define HAVE_GETLINE 1
 #define HAVE_INTTYPES_H 1
 #define HAVE_PTHREAD 1
@@ -29,6 +31,8 @@
 #define HAVE_STDATOMIC_H 1
 #define HAVE_SYS_STAT_H 1
 #define HAVE_SYS_TYPES_H 1
+#define HAVE_TCP_KEEPALIVE 1
+#define HAVE_TCP_INFO_SND_WND 1
 #define STDC_HEADERS 1
 
 #endif

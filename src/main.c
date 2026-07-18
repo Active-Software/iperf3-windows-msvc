@@ -47,6 +47,9 @@
 #include "net.h"
 #include "units.h"
 
+#ifdef _WIN32
+#include "iperf_win32_service.h"
+#endif
 
 static int run(struct iperf_test *test);
 
@@ -58,6 +61,13 @@ main(int argc, char **argv)
     struct iperf_test *test;
 
 #ifdef _WIN32
+    {
+        int service_exit_code = 0;
+        if (iperf_win32_service_maybe_handle(argc, argv, &service_exit_code)) {
+            return service_exit_code;
+        }
+    }
+
     if (iperf_win32_startup() < 0) {
         fprintf(stderr, "Winsock initialization failed\n");
         return 1;
