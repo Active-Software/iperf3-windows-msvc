@@ -22,6 +22,9 @@ Limitations:
 
 Windows service:
 
+  The Unix daemon option -D / --daemon is not supported on native Windows.
+  Use the Windows service mode instead for a persistent iperf3 server.
+
   Run from an elevated terminal:
 
     iperf3.exe --service-install

@@ -54,7 +54,9 @@ not enabled in this project. Native Windows builds add:
 
 The service commands require an elevated terminal. The service runs `iperf3 -s`
 and writes its log to `%ProgramData%\iperf3\iperf3-service.log`. If the server
-process exits unexpectedly, the service keeps running and starts it again.
+process exits unexpectedly, the service keeps running and starts it again. This
+is the native Windows replacement for the Unix `-D` / `--daemon` mode, which is
+not supported by this build.
 
 ## Release package contents
 
